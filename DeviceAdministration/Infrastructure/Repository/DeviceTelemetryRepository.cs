@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                 configProvider.GetConfigurationSettingValue(
                     "TelemetryDataPrefix");
 
-            this._telemetryStoreConnectionString = 
+            this._telemetryStoreConnectionString =
                 configProvider.GetConfigurationSettingValue(
                     "device.StorageConnectionString");
 
@@ -88,7 +88,6 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
             IEnumerable<IListBlobItem> blobs;
             CloudBlockBlob blockBlob;
             CloudBlobContainer container;
-            int preFilterCount;
             IEnumerable<DeviceTelemetryModel> result;
 
             minTime = minTime.ToUniversalTime();
@@ -113,10 +112,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                             null);
                     });
 
-            blobs = 
-                blobs.OrderByDescending(
-                    t => BlobStorageHelper.ExtractBlobItemDate(t));
-
+            blobs = GetApplicableBlobItems(blobs, minTime);
             foreach (IListBlobItem blob in blobs)
             {
                 if ((blockBlob = blob as CloudBlockBlob) == null)
@@ -138,8 +134,6 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                     break;
                 }
 
-                preFilterCount = blobModels.Count();
-
                 blobModels =
                     blobModels.Where(
                         t =>
@@ -147,17 +141,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                             t.Timestamp.HasValue &&
                             t.Timestamp.Value.ToUniversalTime() >= minTime);
 
-                if (preFilterCount == 0)
-                {
-                    break;
-                }
-
                 result = result.Concat(blobModels);
-
-                if (preFilterCount != blobModels.Count())
-                {
-                    break;
-                }
             }
 
             if (!string.IsNullOrEmpty(deviceId))
@@ -278,6 +262,36 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
         #endregion
 
         #region Private Methods
+
+        #region Static Method: GetApplicableBlobItems
+
+        private static IEnumerable<IListBlobItem> GetApplicableBlobItems(
+            IEnumerable<IListBlobItem> blobItems,
+            DateTime minTime)
+        {
+            DateTime? blobDate;
+
+            Debug.Assert(blobItems != null, "blobItems is a null reference.");
+
+            blobItems =
+                blobItems.Where(t => t != null).OrderByDescending(
+                    u => BlobStorageHelper.ExtractBlobItemDate(u));
+
+            foreach (IListBlobItem blobItem in blobItems)
+            {
+                yield return blobItem;
+
+                // Allow 1 expired item.
+                blobDate = BlobStorageHelper.ExtractBlobItemDate(blobItem);
+                if (!blobDate.HasValue ||
+                    blobDate.Value < minTime)
+                {
+                    break;
+                }
+            }
+        }
+
+        #endregion
 
         #region Static Method: LoadBlobTelemetryModelsAsync
 
