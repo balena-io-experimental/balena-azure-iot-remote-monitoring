@@ -30,7 +30,7 @@
         "ehRuleOutName": "[concat(variables('name'), '-ehruleout')]",
         "sbKeyName": "RootManageSharedAccessKey",
         "sbResourceId": "[resourceId('Microsoft.Eventhub/namespaces/authorizationRules', variables('sbName'), variables('sbKeyName'))]",
-        "saVersion": "2015-06-01",
+        "saVersion": "2015-10-01",
         "webVersion": "2015-04-01",
         "bingMapsName": "[concat(variables('name'), '-map')]",
         "bingMapsVersion": "2015-07-02",
@@ -179,6 +179,7 @@
                 "sku": {
                     "name": "standard"
                 },
+                "OutputStartMode": "JobStartTime",
                 "EventsOutOfOrderMaxDelayInSeconds": 10,
                 "EventsOutOfOrderPolicy": "adjust",
                 "Inputs": [
@@ -283,6 +284,7 @@
                 "sku": {
                     "name": "standard"
                 },
+                "OutputStartMode": "JobStartTime",
                 "EventsOutOfOrderMaxDelayInSeconds": 10,
                 "EventsOutOfOrderPolicy": "adjust",
                 "Inputs": [
@@ -356,6 +358,7 @@
                 "sku": {
                     "name": "standard"
                 },
+                "OutputStartMode": "JobStartTime",
                 "EventsOutOfOrderMaxDelayInSeconds": 10,
                 "EventsOutOfOrderPolicy": "adjust",
                 "Inputs": [
@@ -571,7 +574,10 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
                 "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('docDBName'))]",
                 "[resourceId('Microsoft.Devices/Iothubs', variables('name'))]",
-                "[resourceId('Microsoft.BingMaps/mapApis', variables('bingMapsName'))]"
+                "[resourceId('Microsoft.BingMaps/mapApis', variables('bingMapsName'))]",
+                "[resourceId('Microsoft.StreamAnalytics/streamingjobs', concat(variables('name'), '-Telemetry'))]",
+                "[resourceId('Microsoft.StreamAnalytics/streamingjobs', concat(variables('name'), '-DeviceInfo'))]",
+                "[resourceId('Microsoft.StreamAnalytics/streamingjobs', concat(variables('name'), '-Rules'))]"
             ],
             "properties": {
                 "serverFarmId": "[variables('webJobPlanName')]",
