@@ -1,17 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using GlobalResources;
 using Microsoft.Azure.Devices.Applications.RemoteMonitoring.Common.Models;
 using Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infrastructure.BusinessLogic;
 
 namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.Models
 {
+    [Serializable]
+    [DataContract(Name = "CommandModel")]
     public class CommandModel
     {
-        private List<ParameterModel> _parameters; 
+        [DataMember(Name = "_parameters")]
+        private List<ParameterModel> _parameters;
+
         public List<ParameterModel> Parameters
         {
             get
@@ -26,10 +32,16 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
 
             set { _parameters = value; }
         }
+
+        [DataMember(Name = "name")]
         public string Name { get; set; }
+
+        [DataMember(Name = "deviceId")]
         public string DeviceId { get; set; }
     }
 
+    [Serializable]
+    [DataContract(Name = "ParameterModel")]
     public class ParameterModel : Parameter, IValidatableObject
     {
         public ParameterModel()
@@ -37,8 +49,10 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
             ErrorMessages = new List<string>();
         }
 
+        [DataMember(Name = "value")]
         public string Value { get; set; }
 
+        [DataMember(Name = "errorMessages")]
         public List<string> ErrorMessages { get; private set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

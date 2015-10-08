@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Runtime.Serialization;
 using Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infrastructure.Models;
 
 namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.Models
@@ -6,6 +8,8 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
     /// <summary>
     /// A model for holding data that the Dashboard Device pane shows.
     /// </summary>
+    [Serializable]
+    [DataContract(Name = "DashboardDevicePaneDataModel")]
     public class DashboardDevicePaneDataModel
     {
         #region Properties
@@ -14,6 +18,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
         /// Gets or sets the ID of the Device for which telemetry should be 
         /// shown.
         /// </summary>
+        [DataMember(Name = "deviceId")]
         public string DeviceId
         {
             get;
@@ -24,6 +29,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
         /// Gets or sets an array of DeviceTelemetryModel for backing the 
         /// telemetry line graph.
         /// </summary>
+        [DataMember(Name = "deviceTelemetryModels")]
         public DeviceTelemetryModel[] DeviceTelemetryModels
         {
             get;
@@ -34,6 +40,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
         /// Gets or sets a DeviceTelemetrySummaryModel for backing the 
         /// telemetry summary gauges.
         /// </summary>
+        [DataMember(Name = "deviceTelemetrySummaryModel")]
         public DeviceTelemetrySummaryModel DeviceTelemetrySummaryModel
         {
             get;
