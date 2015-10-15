@@ -19,16 +19,10 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
     /// </summary>
     public class DeviceTelemetryRepository : IDeviceTelemetryRepository
     {
-        #region Instance Variables
-
         private readonly string _telemetryContainerName;
         private readonly string _telemetryDataPrefix;
         private readonly string _telemetryStoreConnectionString;
         private readonly string _telemetrySummaryPrefix;
-
-        #endregion
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the DeviceTelemetryRepository class.
@@ -37,36 +31,18 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
         /// The IConfigurationProvider implementation with which to initialize 
         /// the new instance.
         /// </param>
-        public DeviceTelemetryRepository(
-            IConfigurationProvider configProvider)
+        public DeviceTelemetryRepository(IConfigurationProvider configProvider)
         {
             if (configProvider == null)
             {
                 throw new ArgumentNullException("configProvider");
             }
 
-            this._telemetryContainerName =
-                configProvider.GetConfigurationSettingValue(
-                "TelemetryStoreContainerName");
-
-            this._telemetryDataPrefix =
-                configProvider.GetConfigurationSettingValue(
-                    "TelemetryDataPrefix");
-
-            this._telemetryStoreConnectionString =
-                configProvider.GetConfigurationSettingValue(
-                    "device.StorageConnectionString");
-
-            this._telemetrySummaryPrefix =
-                configProvider.GetConfigurationSettingValue(
-                    "TelemetrySummaryPrefix");
+            _telemetryContainerName = configProvider.GetConfigurationSettingValue("TelemetryStoreContainerName");
+            _telemetryDataPrefix = configProvider.GetConfigurationSettingValue("TelemetryDataPrefix");
+            _telemetryStoreConnectionString = configProvider.GetConfigurationSettingValue("device.StorageConnectionString");
+            _telemetrySummaryPrefix = configProvider.GetConfigurationSettingValue("TelemetrySummaryPrefix");
         }
-
-        #endregion
-
-        #region Public Methods
-
-        #region Instance Method: LoadLatestDeviceTelemetryAsync
 
         /// <summary>
         /// Loads the most recent Device telemetry.
@@ -89,9 +65,9 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
             IEnumerable<IListBlobItem> blobs;
             CloudBlockBlob blockBlob;
             CloudBlobContainer container;
+            int preFilterCount;
             IEnumerable<DeviceTelemetryModel> result;
 
-            minTime = minTime.ToUniversalTime();
             result = new DeviceTelemetryModel[0];
 
             container =
@@ -113,7 +89,10 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                             null);
                     });
 
-            blobs = GetApplicableBlobItems(blobs, minTime);
+            blobs =
+                blobs.OrderByDescending(
+                    t => BlobStorageHelper.ExtractBlobItemDate(t));
+
             foreach (IListBlobItem blob in blobs)
             {
                 if ((blockBlob = blob as CloudBlockBlob) == null)
@@ -135,14 +114,26 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                     break;
                 }
 
+                preFilterCount = blobModels.Count();
+
                 blobModels =
                     blobModels.Where(
                         t =>
                             (t != null) &&
                             t.Timestamp.HasValue &&
-                            t.Timestamp.Value.ToUniversalTime() >= minTime);
+                            t.Timestamp.Value >= minTime);
+
+                if (preFilterCount == 0)
+                {
+                    break;
+                }
 
                 result = result.Concat(blobModels);
+
+                if (preFilterCount != blobModels.Count())
+                {
+                    break;
+                }
             }
 
             if (!string.IsNullOrEmpty(deviceId))
@@ -152,10 +143,6 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
 
             return result;
         }
-
-        #endregion
-
-        #region Instance Method: LoadLatestDeviceTelemetrySummaryAsync
 
         /// <summary>
         /// Loads the most recent DeviceTelemetrySummaryModel for a specified Device.
@@ -176,25 +163,14 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
             string deviceId,
             DateTime? minTime)
         {
-            IEnumerable<DeviceTelemetrySummaryModel> blobModels;
-            IEnumerable<IListBlobItem> blobs;
-            CloudBlockBlob blockBlob;
-            CloudBlobContainer container;
-            DeviceTelemetrySummaryModel summaryModel;
+            DeviceTelemetrySummaryModel summaryModel = null;
 
-            if (minTime.HasValue)
-            {
-                minTime = minTime.Value.ToUniversalTime();
-            }
-
-            summaryModel = null;
-
-            container =
+            CloudBlobContainer container =
                 await BlobStorageHelper.BuildBlobContainerAsync(
                     this._telemetryStoreConnectionString,
                     _telemetryContainerName);
 
-            blobs =
+            IEnumerable<IListBlobItem> blobs =
                 await BlobStorageHelper.LoadBlobItemsAsync(
                     async (token) =>
                     {
@@ -208,9 +184,10 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                             null);
                     });
 
-            blobs =
-                blobs.OrderByDescending(
-                    t => BlobStorageHelper.ExtractBlobItemDate(t));
+            blobs = blobs.OrderByDescending(t => BlobStorageHelper.ExtractBlobItemDate(t));
+
+            IEnumerable<DeviceTelemetrySummaryModel> blobModels;
+            CloudBlockBlob blockBlob;
 
             foreach (IListBlobItem blob in blobs)
             {
@@ -219,10 +196,13 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                     continue;
                 }
 
+                // Translate LastModified to local time zone.  DateTimeOffsets 
+                // don't do this automatically.  This is for equivalent behavior 
+                // with parsed DateTimes.
                 if (minTime.HasValue &&
                     (blockBlob.Properties != null) &&
                     blockBlob.Properties.LastModified.HasValue &&
-                    (blockBlob.Properties.LastModified.Value.UtcDateTime < minTime))
+                    (blockBlob.Properties.LastModified.Value.LocalDateTime < minTime.Value))
                 {
                     break;
                 }
@@ -257,44 +237,6 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
 
             return summaryModel;
         }
-
-        #endregion
-
-        #endregion
-
-        #region Private Methods
-
-        #region Static Method: GetApplicableBlobItems
-
-        private static IEnumerable<IListBlobItem> GetApplicableBlobItems(
-            IEnumerable<IListBlobItem> blobItems,
-            DateTime minTime)
-        {
-            DateTime? blobDate;
-
-            Debug.Assert(blobItems != null, "blobItems is a null reference.");
-
-            blobItems =
-                blobItems.Where(t => t != null).OrderByDescending(
-                    u => BlobStorageHelper.ExtractBlobItemDate(u));
-
-            foreach (IListBlobItem blobItem in blobItems)
-            {
-                yield return blobItem;
-
-                // Allow 1 expired item.
-                blobDate = BlobStorageHelper.ExtractBlobItemDate(blobItem);
-                if (!blobDate.HasValue ||
-                    blobDate.Value < minTime)
-                {
-                    break;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Static Method: LoadBlobTelemetryModelsAsync
 
         private async static Task<List<DeviceTelemetryModel>> LoadBlobTelemetryModelsAsync(
             CloudBlockBlob blob)
@@ -391,28 +333,15 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
             return models;
         }
 
-        #endregion
-
-        #region Static Method: LoadBlobTelemetrySummaryModelsAsync
-
         private async static Task<List<DeviceTelemetrySummaryModel>> LoadBlobTelemetrySummaryModelsAsync(
             CloudBlockBlob blob)
         {
-            IDisposable disp;
-            IEnumerable<StrDict> strdicts;
-            DeviceTelemetrySummaryModel model;
-            List<DeviceTelemetrySummaryModel> models;
-            double number;
-            TextReader reader;
-            string str;
-            MemoryStream stream;
-
             Debug.Assert(blob != null, "blob is a null reference.");
 
-            models = new List<DeviceTelemetrySummaryModel>();
+            var models = new List<DeviceTelemetrySummaryModel>();
 
-            reader = null;
-            stream = null;
+            TextReader reader = null;
+            MemoryStream stream = null;
             try
             {
                 stream = new MemoryStream();
@@ -420,7 +349,10 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                 stream.Position = 0;
                 reader = new StreamReader(stream);
 
-                strdicts = ParsingHelper.ParseCsv(reader).ToDictionaries();
+                IEnumerable<StrDict> strdicts = ParsingHelper.ParseCsv(reader).ToDictionaries();
+                DeviceTelemetrySummaryModel model;
+                double number;
+                string str;
                 foreach (StrDict strdict in strdicts)
                 {
                     model = new DeviceTelemetrySummaryModel();
@@ -470,11 +402,13 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
                         model.TimeFrameMinutes = number;
                     }
 
+                    // Translate LastModified to local time zone.  DateTimeOffsets 
+                    // don't do this automatically.  This is for equivalent behavior 
+                    // with parsed DateTimes.
                     if ((blob.Properties != null) &&
                         blob.Properties.LastModified.HasValue)
                     {
-                        model.Timestamp =
-                            blob.Properties.LastModified.Value.UtcDateTime;
+                        model.Timestamp = blob.Properties.LastModified.Value.LocalDateTime;
                     }
 
                     models.Add(model);
@@ -482,6 +416,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
             }
             finally
             {
+                IDisposable disp;
                 if ((disp = stream) != null)
                 {
                     disp.Dispose();
@@ -495,9 +430,5 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infr
 
             return models;
         }
-
-        #endregion
-
-        #endregion
     }
 }
