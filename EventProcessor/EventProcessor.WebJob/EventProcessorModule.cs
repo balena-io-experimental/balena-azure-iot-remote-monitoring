@@ -7,6 +7,7 @@ using Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infrastr
 using Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Infrastructure.Repository;
 using Microsoft.Azure.Devices.Applications.RemoteMonitoring.EventProcessor.WebJob.Processors;
 using Microsoft.Azure.IoT.Samples.EventProcessor.WebJob.Processors;
+using Microsoft.Azure.IoT.Samples.EventProcessor.WebJob.Processors;
 
 namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.EventProcessor.WebJob
 {
@@ -67,6 +68,9 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.EventProcessor.W
 
             builder.RegisterType<MessageFeedbackProcessor>()
                 .As<IMessageFeedbackProcessor>().SingleInstance();
+
+            builder.RegisterType<ResinDeviceProcessor>()
+                .As<IResinDeviceProcessor>().SingleInstance();
         }
     }
 }

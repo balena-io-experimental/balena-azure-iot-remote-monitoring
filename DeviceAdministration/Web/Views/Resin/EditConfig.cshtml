@@ -1,0 +1,89 @@
+﻿@using GlobalResources
+@model Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.Models.ResinConfigModel
+
+@{
+    ViewBag.Title = @Strings.EditResinConfiguration;
+    Layout = "~/Views/Shared/_LayoutNoNavigation.cshtml";
+}
+
+<header class="header_main">
+    <button class="header_main__button_back" type="button"></button>
+    <h2 class="header_main__subhead">@Strings.EditResinConfiguration</h2>
+</header>
+
+<div class="content_outer">
+    <div class="content_inner">
+        <div id="content">
+            <div id="configurationContainer">
+                @using (Ajax.BeginForm("UpdateConfig", "Resin", null,
+                    new AjaxOptions()
+                    {
+                        HttpMethod = "POST",
+                        OnFailure = "IoTApp.EditResinConfig.onFailure",
+                        OnSuccess = "IoTApp.EditResinConfig.onSuccess",
+                        LoadingElementId = "loadingElement"
+                    }))
+                {
+                    @Html.AntiForgeryToken()
+                    <fieldset class="edit_form">
+                        @Html.LabelFor(m => m.AppId, @Strings.ResinAppId,
+                            new { @class = "edit_form__label" })
+                        @Html.TextBoxFor(m => m.AppId, new { @class="edit_form__text" })
+
+                        @Html.LabelFor(m => m.ApiKey, @Strings.ResinApiKey,
+                            new { @class = "edit_form__label" })
+                        @Html.TextBoxFor(m => m.ApiKey, new { @class = "edit_form__text" })
+                    </fieldset>
+
+                    <fieldset class="fieldset_button">
+                        <button class="button_base" type="submit">@Strings.ResinSaveConfig</button>
+                    </fieldset>
+                }
+
+                <section>
+                    <h2>Creating Resin.io Application</h2>
+                    <p>
+                        Follow
+                        <a href="http://docs.resin.io/#/pages/installing/gettingStarted.md">this guide</a>
+                        to signup with resin.io and create an application.
+                    </p>
+                    <h2>Application ID</h2>
+                    <p>
+                        Check the URL for your application, it should be like
+                        <code>https://dashboard.resin.io/apps/NNNN/devices</code>.
+                        The number <code>NNNN</code> is your application's ID.
+                    </p>
+                    <h2>API Key</h2>
+                    <p>
+                        Follow this steps to get an API key for your app.
+                        <br />
+                        <em>Notice:</em> this process will be simplified in the future.
+                    </p>
+                    <p>
+                        In the resin.io dashboard go to the Preferences page and copy your session Auth Token.
+                    </p>
+                    <p>
+                        Make a POST request (for example, with <code>curl</code> or Chrome Postman extension)
+                        <br />
+                        <code>POST https://api.resin.io/application/NNNN/generate-api-key</code>,
+                        <br />
+                        where NNNN is the App ID from the previous step.
+                        <br />
+                        You should send the Auth header with your request:
+                        <code>Authorization: Bearer AUTH_TOKEN</code>,
+                        where AUTH_TOKEN is what you got from the Preferences page.
+                    </p>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    "use strict";
+    var resources = {
+        redirectToIndexUrl: '@Url.Action("Index", "Device")',
+        errorSendingConfig: '@Strings.ErrorSendingConfig'
+    };
+</script>
+<script type="text/javascript" src="~/Scripts/Views/Resin/EditConfig.js"></script>

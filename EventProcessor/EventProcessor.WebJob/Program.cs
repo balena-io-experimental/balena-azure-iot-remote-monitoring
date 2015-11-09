@@ -23,8 +23,8 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.EventProcessor.W
             try
             {
                 // Cloud deploys often get staged and started to warm them up, then get a shutdown
-                // signal from the framework before being moved to the production slot. We don't want 
-                // to start initializing data if we have already gotten the shutdown message, so we'll 
+                // signal from the framework before being moved to the production slot. We don't want
+                // to start initializing data if we have already gotten the shutdown message, so we'll
                 // monitor it. This environment variable is reliable
                 // http://blog.amitapple.com/post/2014/05/webjobs-graceful-shutdown/#.VhVYO6L8-B4
                 shutdownFile = Environment.GetEnvironmentVariable(SHUTDOWN_FILE_ENV_VAR);
@@ -55,6 +55,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.EventProcessor.W
                     StartEventProcessorHost();
                     StartActionProcessorHost();
                     StartMessageFeedbackProcessorHost();
+                    StartResinDeviceProcessorHost();
 
                     RunAsync().Wait();
                 }
@@ -100,6 +101,13 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.EventProcessor.W
             Trace.TraceInformation("Starting command feedback processor");
             var feedbackProcessor = eventProcessorContainer.Resolve<IMessageFeedbackProcessor>();
             feedbackProcessor.Start();
+        }
+
+        static void StartResinDeviceProcessorHost()
+        {
+            Trace.TraceInformation("Starting Resin.io device processor");
+            var resinDeviceProcessor = eventProcessorContainer.Resolve<IResinDeviceProcessor>();
+            resinDeviceProcessor.Start();
         }
 
         static async Task RunAsync()

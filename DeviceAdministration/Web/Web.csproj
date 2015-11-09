@@ -262,6 +262,7 @@
     <Compile Include="Controllers\DeviceCommandController.cs" />
     <Compile Include="Controllers\DeviceController.cs" />
     <Compile Include="Controllers\DeviceRulesController.cs" />
+    <Compile Include="Controllers\ResinController.cs" />
     <Compile Include="DataTables\Column.cs" />
     <Compile Include="DataTables\DataTablesRequest.cs" />
     <Compile Include="DataTables\DataTablesResponse.cs" />
@@ -277,6 +278,7 @@
     <Compile Include="Models\AlertHistoryDeviceModel.cs" />
     <Compile Include="Models\EditDeviceRuleModel.cs" />
     <Compile Include="Models\SimInformationViewModel.cs" />
+    <Compile Include="Models\ResinConfigModel.cs" />
     <Compile Include="Models\UpdateActionModel.cs" />
     <Compile Include="Models\AlertHistoryResultsModel.cs" />
     <Compile Include="Models\DashboardDevicePaneDataModel.cs" />
@@ -478,6 +480,7 @@
     <Content Include="Scripts\Views\Device\EditDeviceProperties.js" />
     <Content Include="Scripts\Views\Device\RemoveDevice.js" />
     <Content Include="Scripts\Views\IoTApp.js" />
+    <Content Include="Scripts\Views\Resin\EditConfig.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -558,6 +561,7 @@
     <Content Include="Views\Advanced\_SelectAdvancedProcess.cshtml" />
     <Content Include="Views\Shared\_NavigationSubmenu.cshtml" />
     <Content Include="Views\Advanced\_IccidAssociation.cshtml" />
+    <Content Include="Views\Resin\EditConfig.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

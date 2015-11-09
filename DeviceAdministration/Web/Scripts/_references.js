@@ -38,3 +38,4 @@
 /// <reference path="moment-with-locales.min.js" />
 /// <reference path="jquery-ui-i18n.min.js" />
 /// <reference path="views/advanced/advanced.js" />
+/// <reference path="views/resin/editconfig.js" />
