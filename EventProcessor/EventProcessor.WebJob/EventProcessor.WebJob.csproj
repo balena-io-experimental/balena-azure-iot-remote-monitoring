@@ -148,6 +148,10 @@
     <Compile Include="Processors\IDeviceEventProcessor.cs" />
     <Compile Include="Processors\IMessageFeedbackProcessor.cs" />
     <Compile Include="Processors\MessageFeedbackProcessor.cs" />
+    <Compile Include="Processors\Resin\IResinDeviceProcessor.cs" />
+    <Compile Include="Processors\Resin\ResinApiClient.cs" />
+    <Compile Include="Processors\Resin\ResinDeviceProcessor.cs" />
+    <Compile Include="Processors\Resin\ResinSynchronizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

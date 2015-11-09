@@ -117,6 +117,7 @@
     <Compile Include="BusinessLogic\KeyLogic.cs" />
     <Compile Include="BusinessLogic\SecurityKeyGenerator.cs" />
     <Compile Include="Exceptions\DeviceAdministrationExceptionBase.cs" />
+    <Compile Include="Exceptions\ResinDeviceAlreadyRegisteredException.cs" />
     <Compile Include="Exceptions\DeviceNotRegisteredException.cs" />
     <Compile Include="Exceptions\DeviceRegistrationException.cs" />
     <Compile Include="Exceptions\UnsupportedCommandException.cs" />
@@ -166,7 +167,11 @@
     <Compile Include="Repository\IDeviceTelemetryRepository.cs" />
     <Compile Include="Repository\IotHubRepository.cs" />
     <Compile Include="Repository\FilterHelper.cs" />
+    <Compile Include="Repository\IResinConfigRepository.cs" />
+    <Compile Include="Repository\IResinDeviceRegistryCrudRepository.cs" />
     <Compile Include="Repository\IUserSettingsRepository.cs" />
+    <Compile Include="Repository\ResinConfigRepository.cs" />
+    <Compile Include="Repository\ResinDeviceRepository.cs" />
     <Compile Include="Repository\SampleDeviceTypeRepository.cs" />
     <Compile Include="Repository\IDeviceTypeRepository.cs" />
     <Compile Include="Repository\IIotHubRepository.cs" />

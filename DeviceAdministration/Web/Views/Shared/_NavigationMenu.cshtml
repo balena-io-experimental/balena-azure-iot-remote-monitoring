@@ -1,4 +1,4 @@
-﻿@using System.Collections.Generic
+@using System.Collections.Generic
 @using Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.Security
 @using GlobalResources
 @using Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.Navigation
@@ -18,10 +18,18 @@
         }
     }
 
-    @if (PermsChecker.HasPermission(Permission.AddDevices))
-    {
-        <a class="navigation__link navigation__link--add_device" href="@Url.Action("AddDevice", "Device")">@Strings.AddDevice</a>
-    }
+    <div class="navigation__bottom">
+      @if (PermsChecker.HasPermission(Permission.AddDevices))
+      {
+          <a class="navigation__link navigation__link--add_device" href="@Url.Action("AddDevice", "Device")">@Strings.AddDevice</a>
+      }
+
+      @if (PermsChecker.HasPermission(Permission.EditResinConfig))
+      {
+          <a class="navigation__link navigation__link--resin_config" href="@Url.Action("EditConfig", "Resin")">@Strings.EditResinConfig</a>
+      }
+    </div>
+
 </nav>
 
 @foreach (var navigationMenuItem in Model.Where(navigationMenuItem => navigationMenuItem.Selected && navigationMenuItem.Children != null))

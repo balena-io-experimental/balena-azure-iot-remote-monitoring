@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Web;
 
 namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.Security
@@ -22,7 +22,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
 
         public RolePermissions()
         {
-            _allRoles = new List<string> 
+            _allRoles = new List<string>
                 {
                     ADMIN_ROLE_NAME,
                     READ_ONLY_ROLE_NAME,
@@ -86,7 +86,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
             AssignRolesToPermission(Permission.ViewActions,
                 READ_ONLY_ROLE_NAME,
                 ADMIN_ROLE_NAME);
-            
+
             AssignRolesToPermission(Permission.AssignAction,
                 ADMIN_ROLE_NAME);
 
@@ -130,6 +130,9 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web.
                 ADMIN_ROLE_NAME);
 
             AssignRolesToPermission(Permission.CellularConn,
+                ADMIN_ROLE_NAME);
+
+            AssignRolesToPermission(Permission.EditResinConfig,
                 ADMIN_ROLE_NAME);
         }
 

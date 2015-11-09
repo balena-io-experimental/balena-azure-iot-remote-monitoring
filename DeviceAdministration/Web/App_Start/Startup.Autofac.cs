@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web
             // Setup Autofac dependency resolver for WebAPI
             Startup.HttpConfiguration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
-            // 1.  Register the Autofac middleware 
+            // 1.  Register the Autofac middleware
             // 2.  Register Autofac Web API middleware,
             // 3.  Register the standard Web API middleware (this call is made in the Startup.WebApi.cs)
             app.UseAutofacMiddleware(container);
@@ -79,6 +79,7 @@ namespace Microsoft.Azure.Devices.Applications.RemoteMonitoring.DeviceAdmin.Web
             builder.RegisterType<DeviceTelemetryRepository>().As<IDeviceTelemetryRepository>();
             builder.RegisterType<AlertsRepository>().As<IAlertsRepository>();
             builder.RegisterType<UserSettingsRepository>().As<IUserSettingsRepository>();
+            builder.RegisterType<ResinConfigRepository>().As<IResinConfigRepository>();
             builder.RegisterType<DocDbRestUtility>().As<IDocDbRestUtility>();
             builder.RegisterType<ApiRegistrationRepository>().As<IApiRegistrationRepository>();
             builder.RegisterType<JasperCredentialsProvider>().As<ICredentialProvider>();

@@ -1268,6 +1268,24 @@ namespace GlobalResources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resin.io Config.
+        /// </summary>
+        public static string EditResinConfig {
+            get {
+                return ResourceManager.GetString("EditResinConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Resin.io integration configuration.
+        /// </summary>
+        public static string EditResinConfiguration {
+            get {
+                return ResourceManager.GetString("EditResinConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (empty).
         /// </summary>
         public static string EmptyKey {
@@ -2749,6 +2767,33 @@ namespace GlobalResources {
         public static string ResetLabel {
             get {
                 return ResourceManager.GetString("ResetLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resin.io API Key.
+        /// </summary>
+        public static string ResinApiKey {
+            get {
+                return ResourceManager.GetString("ResinApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resin.io Application ID.
+        /// </summary>
+        public static string ResinAppId {
+            get {
+                return ResourceManager.GetString("ResinAppId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Resin.io Config.
+        /// </summary>
+        public static string ResinSaveConfig {
+            get {
+                return ResourceManager.GetString("ResinSaveConfig", resourceCulture);
             }
         }
         
