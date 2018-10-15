@@ -2,8 +2,7 @@
 
 This is the fork of Azure IoT Remote Monitoring preconfigured solution which enables integration with balena.
 For more information check:
-https://balena.io/azure/
-http://docs.balena.io/#/pages/integrations/azure.md
+https://balena.io/docs/learn/develop/integrations/azure/
 
 # Microsoft Azure IoT Suite
 You can deploy preconfigured solutions that implement common Internet of Things (IoT) scenarios to Microsoft Azure using your Azure subscrption. You can use preconfigured solutions:
